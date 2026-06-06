@@ -7,6 +7,13 @@ define('ROOT_PATH', dirname(__DIR__));
 require_once ROOT_PATH . '/vendor/autoload.php';
 require_once ROOT_PATH . '/config/config.php';
 
+// ── TEST TEMPORANEO — da rimuovere dopo la verifica ──────────
+$db    = \Src\Core\Database::getInstance();
+$rooms = $db->query("SELECT id, name, price_per_night FROM rooms")->fetchAll();
+echo '<pre>' . print_r($rooms, true) . '</pre>';
+exit;
+// ─────────────────────────────────────────────────────────────
+
 use Src\Core\Router;
 use Src\Exceptions\HttpException;
 use Src\Exceptions\NotFoundException;
