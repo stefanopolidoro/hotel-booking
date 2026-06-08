@@ -7,21 +7,12 @@ define('ROOT_PATH', dirname(__DIR__));
 require_once ROOT_PATH . '/vendor/autoload.php';
 require_once ROOT_PATH . '/config/config.php';
 
-// ── TEST TEMPORANEO — da rimuovere dopo la verifica ──────────
-$db    = \Src\Core\Database::getInstance();
-$rooms = $db->query("SELECT id, name, price_per_night FROM rooms")->fetchAll();
-echo '<pre>' . print_r($rooms, true) . '</pre>';
-exit;
-// ─────────────────────────────────────────────────────────────
-
 use Src\Core\Router;
 use Src\Exceptions\HttpException;
 use Src\Exceptions\NotFoundException;
-use App\Controllers\HomeController;
 
 set_exception_handler(function (\Throwable $e) {
     $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
-
     http_response_code($code);
 
     if (APP_ENV === 'development') {
@@ -35,13 +26,13 @@ set_exception_handler(function (\Throwable $e) {
     $errorView = ROOT_PATH . '/app/Views/errors/' . $code . '.php';
     $fallback  = ROOT_PATH . '/app/Views/errors/500.php';
 
-    if (file_exists($errorView))   require $errorView;
+    if (file_exists($errorView))    require $errorView;
     elseif (file_exists($fallback)) require $fallback;
     else echo "Errore {$code}";
 });
 
 $router = new Router();
 
-$router->get('/', [HomeController::class, 'index']);
+$router->get('/', [\App\Controllers\HomeController::class, 'index']);
 
 $router->dispatch();
