@@ -61,4 +61,11 @@ abstract class BaseController
             $_POST
         );
     }
+
+    protected function requireAuth(): void
+    {
+        if (empty($_SESSION[ADMIN_SESSION_KEY])) {
+            $this->redirect(url('/admin/login'));
+        }
+    }
 }
