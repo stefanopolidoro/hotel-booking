@@ -33,8 +33,11 @@ set_exception_handler(function (\Throwable $e) {
 
 $router = new Router();
 
-$router->get('/',          [\App\Controllers\HomeController::class,  'index']);
-$router->get('/rooms',     [\App\Controllers\RoomController::class,  'index']);
-$router->get('/rooms/{id}',[\App\Controllers\RoomController::class,  'show']);
+$router->get('/',                       [\App\Controllers\HomeController::class,    'index']);
+$router->get('/rooms',                  [\App\Controllers\RoomController::class,    'index']);
+$router->get('/rooms/{id}',             [\App\Controllers\RoomController::class,    'show']);
+$router->get('/booking/create',         [\App\Controllers\BookingController::class, 'create']);
+$router->post('/booking/store',         [\App\Controllers\BookingController::class, 'store']);
+$router->get('/booking/confirm/{token}',[\App\Controllers\BookingController::class,'confirm']);
 
 $router->dispatch();
