@@ -48,11 +48,16 @@ $router->get('/admin/logout',            [\App\Controllers\Admin\AuthController:
 $router->get('/admin/dashboard',         [\App\Controllers\Admin\DashboardController::class, 'index']);
 
 // ── Rotte admin — camere ──────────────────────────────────────
-$router->get('/admin/rooms',                   [\App\Controllers\Admin\RoomController::class, 'index']);
-$router->get('/admin/rooms/create',            [\App\Controllers\Admin\RoomController::class, 'create']);
-$router->post('/admin/rooms/store',            [\App\Controllers\Admin\RoomController::class, 'store']);
-$router->get('/admin/rooms/{id}/edit',         [\App\Controllers\Admin\RoomController::class, 'edit']);
-$router->post('/admin/rooms/{id}/update',      [\App\Controllers\Admin\RoomController::class, 'update']);
-$router->post('/admin/rooms/{id}/delete',      [\App\Controllers\Admin\RoomController::class, 'delete']);
+$router->get('/admin/rooms',                  [\App\Controllers\Admin\RoomController::class, 'index']);
+$router->get('/admin/rooms/create',           [\App\Controllers\Admin\RoomController::class, 'create']);
+$router->post('/admin/rooms/store',           [\App\Controllers\Admin\RoomController::class, 'store']);
+$router->get('/admin/rooms/{id}/edit',        [\App\Controllers\Admin\RoomController::class, 'edit']);
+$router->post('/admin/rooms/{id}/update',     [\App\Controllers\Admin\RoomController::class, 'update']);
+$router->post('/admin/rooms/{id}/delete',     [\App\Controllers\Admin\RoomController::class, 'delete']);
+
+// ── Rotte admin — prenotazioni ────────────────────────────────
+$router->get('/admin/bookings',               [\App\Controllers\Admin\BookingController::class, 'index']);
+$router->get('/admin/bookings/{id}',          [\App\Controllers\Admin\BookingController::class, 'show']);
+$router->post('/admin/bookings/{id}/status',  [\App\Controllers\Admin\BookingController::class, 'updateStatus']);
 
 $router->dispatch();
