@@ -1,8 +1,23 @@
 Options -Indexes
 
+# ── Riscrittura URL ───────────────────────────────────────────
 RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
 RewriteRule ^(.*)$ index.php [QSA,L]
+
+# ── Protezione file sensibili ─────────────────────────────────
+<FilesMatch "\.(log|sql|json|lock|md|gitignore|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ── Header sicurezza aggiuntivi ───────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# ── Disabilita la firma del server ────────────────────────────
+ServerSignature Off

@@ -11,13 +11,30 @@ use Src\Core\Router;
 use Src\Exceptions\HttpException;
 use Src\Exceptions\NotFoundException;
 
+// ── Header HTTP di sicurezza ──────────────────────────────────
+
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('X-XSS-Protection: 1; mode=block');
+
+if (APP_ENV === 'production') {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+}
+
+// ── Gestore globale delle eccezioni ──────────────────────────
+
 set_exception_handler(function (\Throwable $e) {
     $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
+
     http_response_code($code);
 
+    log_error($e);
+
     if (APP_ENV === 'development') {
-        echo '<pre style="background:#1e1e1e;color:#d4d4d4;padding:1rem">';
-        echo '<strong>' . get_class($e) . '</strong>: ' . e($e->getMessage()) . "\n\n";
+        echo '<pre style="background:#1e1e1e;color:#d4d4d4;padding:1rem;margin:0">';
+        echo '<strong>' . get_class($e) . '</strong>: ';
+        echo e($e->getMessage()) . "\n\n";
         echo e($e->getTraceAsString());
         echo '</pre>';
         return;
@@ -31,33 +48,35 @@ set_exception_handler(function (\Throwable $e) {
     else echo "Errore {$code}";
 });
 
+// ── Router ────────────────────────────────────────────────────
+
 $router = new Router();
 
-// ── Rotte pubbliche ───────────────────────────────────────────
-$router->get('/',                        [\App\Controllers\HomeController::class,         'index']);
-$router->get('/rooms',                   [\App\Controllers\RoomController::class,         'index']);
-$router->get('/rooms/{id}',              [\App\Controllers\RoomController::class,         'show']);
-$router->get('/booking/create',          [\App\Controllers\BookingController::class,      'create']);
-$router->post('/booking/store',          [\App\Controllers\BookingController::class,      'store']);
-$router->get('/booking/confirm/{token}', [\App\Controllers\BookingController::class,      'confirm']);
+// Rotte pubbliche
+$router->get('/',                        [\App\Controllers\HomeController::class,    'index']);
+$router->get('/rooms',                   [\App\Controllers\RoomController::class,    'index']);
+$router->get('/rooms/{id}',              [\App\Controllers\RoomController::class,    'show']);
+$router->get('/booking/create',          [\App\Controllers\BookingController::class, 'create']);
+$router->post('/booking/store',          [\App\Controllers\BookingController::class, 'store']);
+$router->get('/booking/confirm/{token}', [\App\Controllers\BookingController::class, 'confirm']);
 
-// ── Rotte admin ───────────────────────────────────────────────
+// Rotte admin — autenticazione
 $router->get('/admin/login',             [\App\Controllers\Admin\AuthController::class,      'loginForm']);
 $router->post('/admin/login',            [\App\Controllers\Admin\AuthController::class,      'login']);
 $router->get('/admin/logout',            [\App\Controllers\Admin\AuthController::class,      'logout']);
 $router->get('/admin/dashboard',         [\App\Controllers\Admin\DashboardController::class, 'index']);
 
-// ── Rotte admin — camere ──────────────────────────────────────
-$router->get('/admin/rooms',                  [\App\Controllers\Admin\RoomController::class, 'index']);
-$router->get('/admin/rooms/create',           [\App\Controllers\Admin\RoomController::class, 'create']);
-$router->post('/admin/rooms/store',           [\App\Controllers\Admin\RoomController::class, 'store']);
-$router->get('/admin/rooms/{id}/edit',        [\App\Controllers\Admin\RoomController::class, 'edit']);
-$router->post('/admin/rooms/{id}/update',     [\App\Controllers\Admin\RoomController::class, 'update']);
-$router->post('/admin/rooms/{id}/delete',     [\App\Controllers\Admin\RoomController::class, 'delete']);
+// Rotte admin — camere
+$router->get('/admin/rooms',             [\App\Controllers\Admin\RoomController::class, 'index']);
+$router->get('/admin/rooms/create',      [\App\Controllers\Admin\RoomController::class, 'create']);
+$router->post('/admin/rooms/store',      [\App\Controllers\Admin\RoomController::class, 'store']);
+$router->get('/admin/rooms/{id}/edit',   [\App\Controllers\Admin\RoomController::class, 'edit']);
+$router->post('/admin/rooms/{id}/update',[\App\Controllers\Admin\RoomController::class, 'update']);
+$router->post('/admin/rooms/{id}/delete',[\App\Controllers\Admin\RoomController::class, 'delete']);
 
-// ── Rotte admin — prenotazioni ────────────────────────────────
-$router->get('/admin/bookings',               [\App\Controllers\Admin\BookingController::class, 'index']);
-$router->get('/admin/bookings/{id}',          [\App\Controllers\Admin\BookingController::class, 'show']);
-$router->post('/admin/bookings/{id}/status',  [\App\Controllers\Admin\BookingController::class, 'updateStatus']);
+// Rotte admin — prenotazioni
+$router->get('/admin/bookings',                [\App\Controllers\Admin\BookingController::class, 'index']);
+$router->get('/admin/bookings/{id}',           [\App\Controllers\Admin\BookingController::class, 'show']);
+$router->post('/admin/bookings/{id}/status',   [\App\Controllers\Admin\BookingController::class, 'updateStatus']);
 
 $router->dispatch();

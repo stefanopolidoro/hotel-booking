@@ -63,3 +63,23 @@ function nights_between(string $checkIn, string $checkOut): int
     $diff = (new \DateTime($checkIn))->diff(new \DateTime($checkOut))->days;
     return max(1, (int) $diff);
 }
+
+/**
+ * Scrive un'eccezione nel file di log.
+ * Chiamata automaticamente dal gestore globale in public/index.php.
+ */
+function log_error(\Throwable $e): void
+{
+    $logFile = ROOT_PATH . '/storage/logs/app.log';
+
+    $line = sprintf(
+        "[%s] %s: %s in %s:%d\n",
+        date('Y-m-d H:i:s'),
+        get_class($e),
+        $e->getMessage(),
+        $e->getFile(),
+        $e->getLine()
+    );
+
+    error_log($line, 3, $logFile);
+}

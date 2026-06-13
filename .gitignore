@@ -1,5 +1,6 @@
 /vendor/
-config/config.php
+/config/config.php
+/storage/logs/*.log
 .env
 .DS_Store
 .vscode/
