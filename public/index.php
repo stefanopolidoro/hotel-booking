@@ -33,6 +33,8 @@ set_exception_handler(function (\Throwable $e) {
 
 $router = new Router();
 
-$router->get('/', [\App\Controllers\HomeController::class, 'index']);
+$router->get('/',          [\App\Controllers\HomeController::class,  'index']);
+$router->get('/rooms',     [\App\Controllers\RoomController::class,  'index']);
+$router->get('/rooms/{id}',[\App\Controllers\RoomController::class,  'show']);
 
 $router->dispatch();
